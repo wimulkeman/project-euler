@@ -9,22 +9,23 @@ class SumOfMultiplies
 {
     public function getSumOfAvailableMultiplyNumbers(array $dividableBy, int $belowNumber): int
     {
-        $maxNumber = $belowNumber - 1;
+        $sumOfMultiplies = 0;
 
-        $multiplications = [];
-
-        foreach ($dividableBy as $multiplyNumber) {
-            if ($multiplyNumber > $maxNumber) {
+        for ($i = 1; $i < $belowNumber; $i ++) {
+            if ($i % 3 && $i % 5) {
                 continue;
             }
 
-            $numberOfMultiplications = \floor($maxNumber / $multiplyNumber);
+            foreach ($dividableBy as $dividableNumber) {
+                if ($i % $dividableNumber) {
+                    continue;
+                }
 
-            for ($i = 1; $i <= $numberOfMultiplications; $i ++) {
-                $multiplications[] = $i * $multiplyNumber;
+                $sumOfMultiplies += $i;
+                break;
             }
         }
 
-        return \array_sum(\array_unique($multiplications));
+        return $sumOfMultiplies;
     }
 }
