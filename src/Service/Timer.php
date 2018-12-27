@@ -9,6 +9,7 @@
 namespace App\Service;
 
 
+use App\DataTransformer\BytesToAReadableFormat;
 use App\DataTransformer\MicrosecondsToReadableTime;
 
 class Timer
@@ -18,10 +19,13 @@ class Timer
 
     /** @var MicrosecondsToReadableTime */
     private $readableTimeTransformer;
+    /** @var BytesToAReadableFormat */
+    private $readableMemoryTransformer;
 
     public function __construct()
     {
         $this->readableTimeTransformer = new MicrosecondsToReadableTime();
+        $this->readableMemoryTransformer = new BytesToAReadableFormat();
     }
 
     public function startTimer(string $timerName = 'default'): void
@@ -65,39 +69,10 @@ class Timer
         $actionArray['mem_stop'] = (int) \memory_get_usage(true);
         $actionArray['mem_emalloc_stop'] = (int) \memory_get_usage(false);
 
-        $actionArray['mem_usage'] = $actionArray['mem_stop'] - $actionArray['mem_start'];
-        $actionArray['mem_emalloc_usage'] = $actionArray['mem_emalloc_stop'] - $actionArray['mem_emalloc_start'];
-
-        // Make sure we always work with positive numbers
-        $actionArray['mem_usage'] = \abs($actionArray['mem_usage']);
-
-        $isNegative = $actionArray['mem_emalloc_usage'] < 0;
-        if ($isNegative) {
-            $actionArray['mem_emalloc_usage'] = \substr($actionArray['mem_emalloc_usage'], 1);
-        }
-
-        // Make the used memory more readable
-        if ($actionArray['mem_usage'] < 1024) {
-            $actionArray['mem_usage'] .= ' bytes';
-        } elseif ($actionArray['mem_usage'] < 1048576) {
-            $actionArray['mem_usage'] = \round($actionArray['mem_usage'] / 1024, 2) . ' KB';
-        } else {
-            $actionArray['mem_usage'] = \round($actionArray['mem_usage'] / 1048576, 2) . ' MB';
-        }
-        if ($isNegative) {
-            $actionArray['mem_usage'] = "-{$actionArray['mem_usage']}";
-        }
-
-        if ($actionArray['mem_emalloc_usage'] < 1024) {
-            $actionArray['mem_emalloc_usage'] .= ' bytes';
-        } elseif ($actionArray['mem_emalloc_usage'] < 1048576) {
-            $actionArray['mem_emalloc_usage'] = \round($actionArray['mem_emalloc_usage'] / 1024, 2) . ' KB';
-        } else {
-            $actionArray['mem_emalloc_usage'] = \round($actionArray['mem_emalloc_usage'] / 1048576, 2) . ' MB';
-        }
-        if ($isNegative) {
-            $actionArray['mem_emalloc_usage'] = "-{$actionArray['mem_emalloc_usage']}";
-        }
+        $actionArray['mem_usage'] = $this->readableMemoryTransformer
+            ->transform($actionArray['mem_stop'] - $actionArray['mem_start']);
+        $actionArray['mem_emalloc_usage'] = $this->readableMemoryTransformer
+            ->transform($actionArray['mem_emalloc_stop'] - $actionArray['mem_emalloc_start']);
 
         // Document where the timers where placed in the code
         $debugTracer = \debug_backtrace();
