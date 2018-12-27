@@ -21,9 +21,11 @@ if (!$solveProblem || $solveProblem === 1) {
     $timer->startTimer('Problem 1');
 
     $sumOfMultiplies = new \App\Service\SumOfMultiplies();
-    $sumOfMultiplies->getSumOfAvailableMultiplyNumbers([3, 5], 1000);
+    $solution1 = $sumOfMultiplies->getSumOfAvailableMultiplyNumbers([3, 5], 1000);
 
     $timer->stopTimer('Problem 1');
+
+    echo "Solution problem 1: $solution1\n";
 }
 
 echo <<<string
