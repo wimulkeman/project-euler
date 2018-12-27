@@ -12,10 +12,6 @@ class SumOfMultiplies
         $sumOfMultiplies = 0;
 
         for ($i = 1; $i < $belowNumber; $i ++) {
-            if ($i % 3 && $i % 5) {
-                continue;
-            }
-
             foreach ($dividableBy as $dividableNumber) {
                 if ($i % $dividableNumber) {
                     continue;
