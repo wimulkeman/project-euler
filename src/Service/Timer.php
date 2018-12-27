@@ -9,10 +9,20 @@
 namespace App\Service;
 
 
+use App\DataTransformer\MicrosecondsToReadableTime;
+
 class Timer
 {
     /** @var array */
     private $timers = [];
+
+    /** @var MicrosecondsToReadableTime */
+    private $readableTimeTransformer;
+
+    public function __construct()
+    {
+        $this->readableTimeTransformer = new MicrosecondsToReadableTime();
+    }
 
     public function startTimer(string $timerName = 'default'): void
     {
@@ -48,7 +58,8 @@ class Timer
         // Log the finish time
         $actionArray['time_stop'] = \microtime(true);
         // Calculate the time elapsed
-        $actionArray['time_elapsed'] = $actionArray['time_stop'] - $actionArray['time_start'];
+        $actionArray['time_elapsed'] = $this->readableTimeTransformer
+            ->transform($actionArray['time_stop'] - $actionArray['time_start']);
 
         // Calculate the used memory
         $actionArray['mem_stop'] = (int) \memory_get_usage(true);

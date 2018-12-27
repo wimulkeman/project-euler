@@ -26,4 +26,22 @@ if (!$solveProblem || $solveProblem === 1) {
     $timer->stopTimer('Problem 1');
 }
 
+echo <<<string
+---------------------------
+Time conversions:
+
+    1000 ms = 1 second
+       1 ms = 0.001 seconds
+    
+    1000 µs = 1 ms
+       1 µs = 0.001 ms
+       
+    1000 ns = 1 µs
+       1 ns = 0.001 µs
+       
+    1000 ps = 1 ns
+       1 ps = 0.001 ns
+---------------------------
+string;
+
 print_r($timer->getTimer());
